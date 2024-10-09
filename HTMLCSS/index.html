@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Upload Page</title>
+    <style>
+        /* General Styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #1e1e1e;
+            color: #f2f2f2;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styling */
+        header {
+            text-align: center;
+            padding: 40px 0;
+            background: linear-gradient(135deg, #65369e 0%, #d080a4 100%);
+            border-radius: 8px;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+
+        header p {
+            font-size: 1.2em;
+            color: #f2f2f2;
+        }
+
+        /* Upload Section Styling */
+        .upload-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .upload-section h2 {
+            margin-bottom: 20px;
+        }
+
+        .upload-section input {
+            margin-right: 10px;
+        }
+
+        .upload-section button {
+            padding: 10px 20px;
+            background-color: #665fb6;
+            border: none;
+            color: #1e1e1e;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .upload-section button:hover {
+            background-color: #c88bcb;
+        }
+
+        /* Table Section Styling */
+        .table-section {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #f2f2f2;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #7e459f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Tugas Algoritma Pemograman II</h1>
+            <p>Adinda Syarifatul Muna (164231042) <br> 
+            Aqila Malfa Zahira (164231036) <br>
+            Radam Gumelar (164231032) </p>
+        </header>
+
+        <section class="upload-section">
+            <h2>Upload CSV File</h2>
+            <input type="file" id="csvFile" accept=".csv">
+            <button onclick="uploadCSV()">Upload</button>
+        </section>
+
+        <section class="table-section">
+            <h2>CSV Data</h2>
+            <table id="csvTable"></table>
+        </section>
+
+        <script>
+            function uploadCSV() {
+                const fileInput = document.getElementById('csvFile');
+                const file = fileInput.files[0];
+
+                if (!file) {
+                    alert('Please select a CSV file to upload.');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const text = event.target.result;
+                    displayCSVData(text);
+                };
+                reader.readAsText(file);
+            }
+
+            function displayCSVData(csvData) {
+                const table = document.getElementById('csvTable');
+                table.innerHTML = ''; // Clear any existing table content
+
+                const rows = csvData.split('\n');
+                rows.forEach((row, index) => {
+                    const tr = document.createElement('tr');
+                    const cells = row.split(',');
+
+                    cells.forEach(cell => {
+                        const td = document.createElement(index === 0 ? 'th' : 'td');
+                        td.textContent = cell;
+                        tr.appendChild(td);
+                    });
+
+                    table.appendChild(tr);
+                });
+            }
+        </script>
+    </div>
+</body>
+</html>

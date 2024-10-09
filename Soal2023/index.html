@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Program Study Table</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #5e0963;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .box {
+            background: linear-gradient(to right, #6a11cb, #b96bcc);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            color: white;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            color: rgb(0, 0, 0);
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            cursor: pointer;
+            background-color: #f2f2f2;
+        }
+
+        input[type="text"] {
+            margin-bottom: 10px;
+            padding: 8px;
+            width: 200px;
+            border: 1px solid #ddd;
+        }
+
+        .title {
+            color: white;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="box">
+        <h2 class="title">Program Study Table</h2>
+
+        <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="Search for programs..">
+
+        <table id="programTable">
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">No</th>
+                    <th onclick="sortTable(1)">Program Studi</th>
+                    <th onclick="sortTable(2)">Jenjang</th>
+                    <th onclick="sortTable(3)">Akreditasi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>Rekayasa Nanoteknologi</td>
+                    <td>S1</td>
+                    <td>BA</td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Teknik Elektro</td>
+                    <td>S1</td>
+                    <td>BA</td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>Teknik Industri</td>
+                    <td>S1</td>
+                    <td>BA</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>Teknik Robotika Dan Kecerdasan Buatan</td>
+                    <td>S1</td>
+                    <td>BA</td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>Teknologi Sains Data</td>
+                    <td>S1</td>
+                    <td>BA</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // Function to search the table
+    function searchTable() {
+        var input, filter, table, tr, td, i, j, txtValue;
+        input = document.getElementById("searchInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("programTable");
+        tr = table.getElementsByTagName("tr");
+
+        for (i = 1; i < tr.length; i++) {
+            tr[i].style.display = "none";
+            td = tr[i].getElementsByTagName("td");
+            for (j = 0; j < td.length; j++) {
+                if (td[j]) {
+                    txtValue = td[j].textContent || td[j].innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    // Function to sort the table
+    function sortTable(n) {
+        var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+        table = document.getElementById("programTable");
+        switching = true;
+        dir = "asc"; // Set the sorting direction to ascending
+
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+            for (i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+                x = rows[i].getElementsByTagName("TD")[n];
+                y = rows[i + 1].getElementsByTagName("TD")[n];
+
+                if (dir == "asc") {
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                } else if (dir == "desc") {
+                    if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+            }
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                switchcount++;
+            } else {
+                if (switchcount == 0 && dir == "asc") {
+                    dir = "desc";
+                    switching = true;
+                }
+            }
+        }
+    }
+</script>
+
+</body>
+</html>

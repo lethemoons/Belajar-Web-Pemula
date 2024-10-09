@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Upload and Search</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #a67a48;
+        }
+
+        .upload-section {
+            display: flex;
+            align-items: center;
+        }
+
+        .upload-section button {
+            margin-left: 5px; /* Jarak antara tombol dan input file */
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Upload CSV and Search</h1>
+        
+        <!-- Bagian Upload CSV dan Button berada dalam satu baris -->
+        <div class="form-group upload-section">
+            <input type="file" id="csvFileInput" class="form-control-file" accept=".csv">
+            <button id="uploadButton" class="btn btn-primary" disabled>Upload CSV</button>
+        </div>
+
+        <br>
+
+        <div class="form-group">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+        </div>
+        <br>
+        <table id="csvTable" class="table table-striped table-bordered">
+            <thead id="csvTableHead"></thead>
+            <tbody id="csvTableBody"></tbody>
+        </table>
+    </div>
+
+    <!-- Bootstrap JS and Dependencies (Popper.js and jQuery) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        let fileContent = ''; // Variable to store file content
+
+        // Enable the "Upload CSV" button when a file is selected
+        document.getElementById('csvFileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    fileContent = e.target.result; // Store the file content in a variable
+                    document.getElementById('uploadButton').disabled = false; // Enable the upload button
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        // Process the file when the "Upload CSV" button is clicked
+        document.getElementById('uploadButton').addEventListener('click', function() {
+            if (fileContent) {
+                const rows = fileContent.split('\n');
+                const tableHead = document.getElementById('csvTableHead');
+                const tableBody = document.getElementById('csvTableBody');
+                tableHead.innerHTML = '';
+                tableBody.innerHTML = '';
+
+                // Create table headers
+                const headers = rows[0].split(',');
+                const headerRow = document.createElement('tr');
+                headers.forEach(header => {
+                    const th = document.createElement('th');
+                    th.textContent = header;
+                    headerRow.appendChild(th);
+                });
+                tableHead.appendChild(headerRow);
+
+                // Create table rows
+                rows.slice(1).forEach(row => {
+                    const rowData = row.split(',');
+                    const tr = document.createElement('tr');
+                    rowData.forEach(cell => {
+                        const td = document.createElement('td');
+                        td.textContent = cell;
+                        tr.appendChild(td);
+                    });
+                    tableBody.appendChild(tr);
+                });
+            }
+        });
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(event) {
+            const filter = event.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#csvTable tbody tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                let match = false;
+                cells.forEach(cell => {
+                    if (cell.textContent.toLowerCase().includes(filter)) {
+                        match = true;
+                    }
+                });
+                row.style.display = match ? '' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+<!-- Perubahan yang Ditambahkan:
+Link Bootstrap CSS CDN: Ditambahkan di dalam <head> untuk menggunakan Bootstrap.
+Kelas Bootstrap:
+container mt-5: Membungkus seluruh konten dengan jarak atas (mt-5).
+form-control-file: Untuk input file.
+form-control: Untuk kotak pencarian agar tampil lebih rapi.
+table table-striped table-bordered: Tabel diberi gaya Bootstrap dengan striping dan border. -->
+
+<!-- /* Ubah warna judul */
+h1 {
+    color: #ff5722; /* Oranye */
+}
+/* Ubah latar belakang tabel */
+table {
+    background-color: #e3f2fd; /* Biru muda */
+}
+/* Ubah warna header tabel */
+th {
+    background-color: #2196f3; /* Biru tua */
+    color: white; /* Warna teks di header */
+} -->

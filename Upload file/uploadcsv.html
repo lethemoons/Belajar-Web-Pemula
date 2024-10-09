@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSV Upload and Search</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Upload CSV and Search</h1>
+    <input type="file" id="csvFileInput" accept=".csv">
+    <br><br>
+    <input type="text" id="searchInput" placeholder="Search...">
+    <br><br>
+    <table id="csvTable">
+        <thead id="csvTableHead"></thead>
+        <tbody id="csvTableBody"></tbody>
+    </table>
+
+    <script>
+        document.getElementById('csvFileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const text = e.target.result;
+                    const rows = text.split('\n');
+                    const tableHead = document.getElementById('csvTableHead');
+                    const tableBody = document.getElementById('csvTableBody');
+                    tableHead.innerHTML = '';
+                    tableBody.innerHTML = '';
+
+                    // Create table headers
+                    const headers = rows[0].split(',');
+                    const headerRow = document.createElement('tr');
+                    headers.forEach(header => {
+                        const th = document.createElement('th');
+                        th.textContent = header;
+                        headerRow.appendChild(th);
+                    });
+                    tableHead.appendChild(headerRow);
+
+                    // Create table rows
+                    rows.slice(1).forEach(row => {
+                        const rowData = row.split(',');
+                        const tr = document.createElement('tr');
+                        rowData.forEach(cell => {
+                            const td = document.createElement('td');
+                            td.textContent = cell;
+                            tr.appendChild(td);
+                        });
+                        tableBody.appendChild(tr);
+                    });
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        document.getElementById('searchInput').addEventListener('input', function(event) {
+            const filter = event.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#csvTable tbody tr');
+            rows.forEach(row => {
+                const cells = row.querySelectorAll('td');
+                let match = false;
+                cells.forEach(cell => {
+                    if (cell.textContent.toLowerCase().includes(filter)) {
+                        match = true;
+                    }
+                });
+                row.style.display = match ? '' : 'none';
+            });
+        });
+    </script>
+</body>
+</html>

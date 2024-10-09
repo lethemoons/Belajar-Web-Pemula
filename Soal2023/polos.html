@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload and Display CSV</title>
+</head>
+<body>
+
+<h2>Upload and Display CSV</h2>
+
+<input type="file" id="fileInput" accept=".csv" />
+<br><br>
+
+<div id="controls" style="display: none;">
+    <label for="sortColumn">Sort by column: </label>
+    <select id="sortColumn"></select>
+    
+    <label for="sortType">Sort type: </label>
+    <select id="sortType">
+        <option value="asc">Ascending</option>
+        <option value="desc">Descending</option>
+    </select>
+    
+    <button onclick="sortTable()">Sort</button>
+    
+    <input type="text" id="searchInput" onkeyup="searchTable()" placeholder="Search...">
+</div>
+
+<table border="1" id="csvTable">
+    <thead>
+        <tr id="tableHeader"></tr>
+    </thead>
+    <tbody id="tableBody">
+        <!-- Rows will be populated here -->
+    </tbody>
+</table>
+
+<script>
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+        var file = e.target.files[0];
+        var reader = new FileReader();
+        
+        reader.onload = function(e) {
+            var text = e.target.result;
+            displayTable(text);
+            document.getElementById('controls').style.display = 'block'; // Show controls after file upload
+        };
+        
+        reader.readAsText(file);
+    });
+
+    // Function to display table from CSV data
+    function displayTable(csv) {
+        var rows = csv.split("\n");
+        var tableHeader = document.getElementById("tableHeader");
+        var tableBody = document.getElementById("tableBody");
+        var sortColumnSelect = document.getElementById("sortColumn");
+
+        tableHeader.innerHTML = "";
+        tableBody.innerHTML = "";
+        sortColumnSelect.innerHTML = "";
+
+        // Populate header
+        var headers = rows[0].split(",");
+        headers.forEach(function(header, index) {
+            var th = document.createElement("th");
+            th.innerHTML = header;
+            tableHeader.appendChild(th);
+
+            // Add options to sortColumn select
+            var option = document.createElement("option");
+            option.value = index;
+            option.text = header;
+            sortColumnSelect.appendChild(option);
+        });
+
+        // Populate body
+        for (var i = 1; i < rows.length; i++) {
+            if (rows[i].trim() !== "") { // Ignore empty lines
+                var tr = document.createElement("tr");
+                var columns = rows[i].split(",");
+                columns.forEach(function(column) {
+                    var td = document.createElement("td");
+                    td.innerHTML = column;
+                    tr.appendChild(td);
+                });
+                tableBody.appendChild(tr);
+            }
+        }
+    }
+
+    // Function to search the table
+    function searchTable() {
+        var input, filter, table, tr, td, i, j, txtValue;
+        input = document.getElementById("searchInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("csvTable");
+        tr = table.getElementsByTagName("tr");
+
+        for (i = 1; i < tr.length; i++) {
+            tr[i].style.display = "none";
+            td = tr[i].getElementsByTagName("td");
+            for (j = 0; j < td.length; j++) {
+                if (td[j]) {
+                    txtValue = td[j].textContent || td[j].innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    // Function to sort the table by selected column and type
+    function sortTable() {
+        var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+        var sortColumnIndex = document.getElementById('sortColumn').value;
+        var sortType = document.getElementById('sortType').value;
+        table = document.getElementById("csvTable");
+        switching = true;
+        dir = sortType; // Set the sorting direction
+
+        while (switching) {
+            switching = false;
+            rows = table.rows;
+
+            for (i = 1; i < (rows.length - 1); i++) {
+                shouldSwitch = false;
+                x = rows[i].getElementsByTagName("TD")[sortColumnIndex];
+                y = rows[i + 1].getElementsByTagName("TD")[sortColumnIndex];
+
+                if (dir == "asc") {
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                } else if (dir == "desc") {
+                    if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                        shouldSwitch = true;
+                        break;
+                    }
+                }
+            }
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                switchcount++;
+            } else {
+                if (switchcount == 0 && dir == "asc") {
+                    dir = "desc";
+                    switching = true;
+                }
+            }
+        }
+    }
+</script>
+
+</body>
+</html>
